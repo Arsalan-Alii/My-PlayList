@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Playlist</title>
+  <link rel="stylesheet" href="css/all.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="playlist-app">
+    <!-- Playlist Header -->
+    <header class="header">
+      <div class="header-logo">
+        <h3 id="app-title"> <span>MY</span>Playlist</h3>
+      </div>
+      <div class="header-theme-btn">
+        <img src="assets/moon.svg" alt="icon" id="theme-icon">
+      </div>
+    </header>
+
+    <!-- Playlist Body -->
+    <div class="playlist-body">
+      <div class="player-area">
+        <div class="video-container">
+          <iframe class="video" src="https://www.youtube.com/embed/73-NF_f1eGM/" scrolling="no" frameborder="0"
+            allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+            allowFullScreen="true">
+          </iframe>
+        </div>
+      </div>
+
+      <div class="list-container">
+        <div class="">
+          <div class="playlist-addVideo">
+            <h2 id="task-title">Playlist</h2>
+            <i class="fas fa-plus" id="add-video"></i>
+          </div>
+          
+          <div class="input-field">
+            <!-- Search video <br> -->
+            <input type="text" name="filter" id="filter" placeholder="Search Video">
+          </div>
+          <div class="collection-list">
+            <ul class="collection"></ul>
+          </div>
+          
+          <a href="#" class="clear-playlist">Clear Playlist</a>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="add-video bg-modal">
+      <div class="modal-contents">
+        <div class="close">✖</div>
+        <h3>Add Video to Playlist</h3>
+        <h5>( YouTube - Facebook - Vimeo )</h5>
+        <form id="add-video-form">
+          <input type="text" name="video-title" id="video-title" placeholder="Video Title">
+          <input type="text" name="video-link" id="video-link" placeholder="Video Link">
+          <input type="submit" value="Add To Playlist" class="btn">
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
