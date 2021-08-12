@@ -211,7 +211,14 @@ input:focus {
   outline: none;
   border: 1px solid #fa5b3e;
 }
-
+.modal-contents input#video-link{
+  margin-bottom: 5px;
+}
+.invalid-url-msg, .invalid-url-msg i {
+  color: red;
+  font-size: 12px;
+  display:none;
+}
 .modal-contents h3 {
   margin-top: 10px;
 }

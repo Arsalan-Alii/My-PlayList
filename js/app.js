@@ -69,13 +69,12 @@ function loadPlaylist() {
   })
 }
 
-// Add Video
 function addVideo(e) {
-
   urlValidation = validateVideoURL(videoLink.value);
 
   if (urlValidation === false) {
-    alert("Invalid URL...try again with valid url");
+    // alert("Invalid URL...try again with valid url");
+    document.querySelector('.invalid-url-msg').style.display = 'block';
     videoLink.value = '';
   }
 
@@ -111,7 +110,7 @@ function addVideo(e) {
     videoList.appendChild(li);
 
     // Store in Local Storage
-    storeVideoInLocalStorage(id, videoTitle.value, videoLink.value);
+    storeVideoInLocalStorage(id, videoTitle.value, videoLink.value, urlValidation);
 
     // Clear input
     videoTitle.value = '';
@@ -122,31 +121,24 @@ function addVideo(e) {
   e.preventDefault();
 }
 
-// Store Video in LS
-function storeVideoInLocalStorage(videoID, videoTitle, videoLink) {
+function storeVideoInLocalStorage(videoID, videoTitle, videoLink, urlInfo) {
   let playlist = getPlaylist();
-  let videoPlatform = getVideoPlatform(videoLink);
-  videoLink = trimVideoURL(videoLink);
+  let videoPlatform = urlInfo[1];
+  videoIdOnPlatform = urlInfo[0];
 
-  playlist.push({ platform: videoPlatform, ID: videoID, title: videoTitle, link: videoLink })
-  // playlist.push({ ID: videoID, title: videoTitle, link: videoLink });
+  playlist.push({ platform: videoPlatform, ID: videoID, title: videoTitle, link: videoLink, platformId: videoIdOnPlatform })
 
   localStorage.setItem('playlist', JSON.stringify(playlist));
 }
 
-// Play Video
 function playVideo(e) {
   if (e.target.parentElement.classList.contains('collection-item')) {
     let playlist = getPlaylist();
 
     playlist.forEach(function (video) {
       if (e.target.parentElement.id === video.ID) {
-        let videoLink = generateURL(video.link, video.platform);
-        // let commonLink = "https://www.youtube.com/embed/";
-        // let videoLink = video.link;
-        // videoLink = commonLink + videoLink;
+        let videoLink = generateURL(video.platformId, video.platform);
         document.querySelector('.video').setAttribute("src", videoLink);
-        // document.querySelector('.video').setAttribute("src", videoLink + "?autoplay=1");
         localStorage.setItem("lastPlayedVideo", JSON.stringify(video));
         localStorage.setItem("currentPlayingVideo", JSON.stringify(video));
         return;
@@ -155,7 +147,6 @@ function playVideo(e) {
   }
 }
 
-// Delete Video
 function deleteVideo(e) {
   if (e.target.parentElement.classList.contains('delete-video')) {
     if (confirm('Do you want to delete?')) {
@@ -167,7 +158,6 @@ function deleteVideo(e) {
   }
 }
 
-// Delete from local storage
 function deleteVideoFromLocalStorage(videoItem) {
   let playlist = getPlaylist();
 
@@ -186,7 +176,6 @@ function deleteVideoFromLocalStorage(videoItem) {
   playNextVideo();
 }
 
-// Clear Playlist
 function clearPlaylist() {
   while (videoList.firstChild) {
     videoList.removeChild(videoList.firstChild);
@@ -195,7 +184,6 @@ function clearPlaylist() {
   localStorage.clear();
 }
 
-// Filter Videos
 function filterVideos(e) {
   const text = e.target.value.toLowerCase();
 
@@ -211,7 +199,6 @@ function filterVideos(e) {
     })
 }
 
-// Get Playlist
 function getPlaylist() {
   let playlist;
   if (localStorage.getItem('playlist') === null) {
@@ -223,44 +210,6 @@ function getPlaylist() {
   return playlist;
 }
 
-// Trim Video URL
-function trimVideoURL(url) {
-  let trimmedURL;
-  if (url.startsWith("https://www.youtube.com")) {
-    trimmedURL = url.replace("https://www.youtube.com/watch?v=", "");
-  }
-  else if (url.startsWith("https://youtu.be/")) {
-    trimmedURL = url.replace("https://youtu.be/", "");
-  }
-  else if (url.startsWith("youtube.com")) {
-    trimmedURL = url.replace("youtube.com/watch?v=", "");
-  }
-  else if (url.startsWith("https://youtu.be/")) {
-    trimmedURL = url.replace("https://youtu.be/", "");
-  }
-  else if (url.startsWith("https://fb.watch/")) {
-    trimmedURL = url.replace("https://fb.watch/", "");
-  }
-  else if (url.startsWith("https://vimeo.com/")) {
-    trimmedURL = url.replace("https://vimeo.com/", "");
-  }
-  return trimmedURL;
-}
-
-// Get Video Platform
-function getVideoPlatform(url) {
-  if (url.startsWith("https://www.youtube.com") || url.startsWith("youtube.com") || url.startsWith("https://youtu.be/")) {
-    return "youtube";
-  }
-  else if (url.startsWith("https://fb.watch") || url.startsWith("fb.watch")) {
-    return "facebook";
-  }
-  else if (url.startsWith("https://vimeo.com")) {
-    return "vimeo";
-  }
-}
-
-// Generate Video Source URL
 function generateURL(link, platform) {
   let sourceURL;
   if (platform === "youtube") {
@@ -270,12 +219,11 @@ function generateURL(link, platform) {
     sourceURL = `https://player.vimeo.com/video/${link}`;
   }
   else if (platform === "facebook") {
-    sourceURL = `https://www.facebook.com/plugins/video.php?autoplay=1&mute=0&href=https://fb.watch/${link}`;
+    sourceURL = `https://www.facebook.com/plugins/video.php?autoplay=1&mute=0&href=${link}`;
   }
   return sourceURL;
 }
 
-// Change Theme
 function changeTheme() {
   document.body.classList.toggle("dark-theme");
   if (document.body.classList.contains("dark-theme")) {
@@ -297,16 +245,17 @@ function getLastSelectedTheme() {
 function getLastPLayedVideo() {
   if (localStorage.getItem('lastPlayedVideo') != null) {
     const lastPlayed = JSON.parse(localStorage.getItem('lastPlayedVideo'));
-    document.querySelector('.video').setAttribute("src", generateURL(lastPlayed.link, lastPlayed.platform));
+    document.querySelector('.video').setAttribute("src", generateURL(lastPlayed.platformId, lastPlayed.platform));
   }
   else {
     document.querySelector('.video').setAttribute("src", "https://www.youtube.com/embed/74cVT_tUpck?autoplay=1");
   }
 }
+
 function playNextVideo() {
   let playlist = getPlaylist();
   if (playlist != []) {
-    document.querySelector('.video').setAttribute("src", generateURL(playlist[0].link, playlist[0].platform));
+    document.querySelector('.video').setAttribute("src", generateURL(playlist[0].platformId, playlist[0].platform));
     localStorage.setItem('lastPlayedVideo', playlist[0]);
   } else {
     document.querySelector('.video').setAttribute("src", "https://www.youtube.com/embed/74cVT_tUpck?autoplay=1");
@@ -318,12 +267,9 @@ function validateVideoURL(url) {
   let regExpFB = /^(?:https?:\/\/)?(?:www.|web.|m.)?(facebook|fb).(com|watch)\/(?:video.php\?v=\d+|(\S+)|photo.php\?v=\d+|\?v=\d+)|\S+\/videos\/((\S+)\/(\d+)|(\d+))\/?$/;
   let regExpVimeo = /^(?:https:\/\/)?(?:www\.)?(?:vimeo.com\/)(\d{5,9})(?=\/)?$/;
 
-  if (url.match(regExpYoutube)) return `https://www.youtube.com/embed/'${url.match(regExpYoutube)[1]}'?autoplay=1`;
-
-  else if (url.match(regExpFB)) return url;
-
-  else if (url.match(regExpVimeo)) return `https://player.vimeo.com/video/${url.match(regExpVimeo)[1]}`;
-
+  if (url.match(regExpYoutube)) return [url.match(regExpYoutube)[1], "youtube"];
+  else if (url.match(regExpFB)) return [url, "facebook"];
+  else if (url.match(regExpVimeo)) return [url.match(regExpVimeo)[1], "vimeo"];
   else return false;
 }
 
@@ -334,10 +280,10 @@ document.getElementById('add-video').addEventListener("click", function () {
 
 document.querySelector('.close').addEventListener("click", function () {
   document.querySelector('.bg-modal').style.display = "none";
+  document.querySelector('.invalid-url-msg').style.display = 'none'
+  videoTitle.value = '';
 });
 
-
-
-
-
-
+document.querySelector('#video-link').addEventListener("focus", function () {
+  document.querySelector('.invalid-url-msg').style.display = 'none'
+});
