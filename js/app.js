@@ -248,7 +248,7 @@ function getLastPLayedVideo() {
     document.querySelector('.video').setAttribute("src", generateURL(lastPlayed.platformId, lastPlayed.platform));
   }
   else {
-    document.querySelector('.video').setAttribute("src", "https://www.youtube.com/embed/74cVT_tUpck?autoplay=1");
+    document.querySelector('.video').setAttribute("src", "https://www.youtube.com/embed/74cVT_tUpck");
   }
 }
 
