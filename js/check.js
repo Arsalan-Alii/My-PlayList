@@ -1,59 +1,13 @@
-const commonLink = "https://www.youtube.com/embed/";
-let url = "https://www.youtube.com/watch?v=2IPw-mWe10U";
-videoID = url.replace("https://www.youtube.com/watch?v=", "");
+function validateVideoURL(url) {
+  let regExpYoutube = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+  let regExpFB = /^(?:https?:\/\/)?(?:www.|web.|m.)?(facebook|fb).(com|watch)\/(?:video.php\?v=\d+|(\S+)|photo.php\?v=\d+|\?v=\d+)|\S+\/videos\/((\S+)\/(\d+)|(\d+))\/?$/;
+  let regExpVimeo = /^(?:https:\/\/)?(?:www\.)?(?:vimeo.com\/)(\d{5,9})(?=\/)?$/;
 
-videoURL = commonLink + videoID;
+  if (url.match(regExpYoutube)) return `https://www.youtube.com/embed/'${url.match(regExpYoutube)[1]}'?autoplay=1`;
 
+  else if (url.match(regExpFB)) return url;
 
-if (url.startsWith("https://www.youtube.com")) {
-  console.log("yt video")
+  else if (url.match(regExpVimeo)) return `https://player.vimeo.com/video/${url.match(regExpVimeo)[1]}`;
+
+  else return false;
 }
-else if ("youtube.com"){
-  console.log("fb video")
-}
-
-
-
-
-
-
-let list = [];
-list.push(
-  {
-    id: "1",
-    title: "v1",
-    link: "link1"
-  }
-);
-list.push(
-  {
-    id: "2",
-    title: "v2",
-    link: "link2"
-  }
-);
-list.push(
-  {
-    id: "3",
-    title: "v3",
-    link: "link3"
-  }
-);
-list.push(
-  {
-    id: "4",
-    title: "v4",
-    link: "link4"
-  }
-);
-
-function getVideo() {
-  for (let i = 0; i < list.length; i++) {
-    if (list[i].id === "2") {
-      return list[i];
-    }
-  }
-}
-
-var a = JSON.stringify(getVideo());
-var b = JSON.parse(a);

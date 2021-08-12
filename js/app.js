@@ -1,3 +1,4 @@
+
 // Define UI Vars
 const form = document.querySelector('#add-video-form');
 const videoList = document.querySelector('.collection');
@@ -57,7 +58,7 @@ function loadPlaylist() {
     // playVideo.className = 'play-video';
     // playVideo.innerHTML = '<i class="far fa-play-circle"></i>';
 
-    const deleteVideo = document.createElement('a');
+    const deleteVideo = document.createElement('span');
     deleteVideo.className = 'delete-video';
     deleteVideo.innerHTML = '<i class="fas fa-trash-alt"></i>';
 
@@ -70,56 +71,53 @@ function loadPlaylist() {
 
 // Add Video
 function addVideo(e) {
-  if (videoTitle.value === '') {
-    alert('Add Video Title');
-    return;
+
+  urlValidation = validateVideoURL(videoLink.value);
+
+  if (urlValidation === false) {
+    alert("Invalid URL...try again with valid url");
+    videoLink.value = '';
   }
-  if (videoLink.value === '') {
-    alert('Add Video Link');
-    return;
+
+  else {
+    const id = Math.random().toString(16).slice(2);
+
+    // Create li element
+    const li = document.createElement('li');
+    // Add class
+    li.className = 'collection-item';
+    li.id = id;
+    // Title Span
+    const title_span = document.createElement('span');
+    title_span.className = 'video-title';
+    title_span.appendChild(document.createTextNode(videoTitle.value));
+    li.appendChild(title_span);
+
+    // Icons Span
+    const videoIcons = document.createElement('span');
+    videoIcons.className = 'video-icons';
+
+    const deleteVideo = document.createElement('span');
+    deleteVideo.className = 'delete-video';
+    deleteVideo.innerHTML = '<i class="fas fa-trash-alt"></i>';
+
+    // videoIcons.appendChild(playVideo);
+    videoIcons.appendChild(deleteVideo);
+
+    // Append Icons to li
+    li.appendChild(videoIcons);
+
+    // Append li to ul
+    videoList.appendChild(li);
+
+    // Store in Local Storage
+    storeVideoInLocalStorage(id, videoTitle.value, videoLink.value);
+
+    // Clear input
+    videoTitle.value = '';
+    videoLink.value = '';
+    document.querySelector('.bg-modal').style.display = "none";
   }
-
-  const id = Math.random().toString(16).slice(2);
-
-  // Create li element
-  const li = document.createElement('li');
-  // Add class
-  li.className = 'collection-item';
-  li.id = id;
-  // Title Span
-  const title_span = document.createElement('span');
-  title_span.className = 'video-title';
-  title_span.appendChild(document.createTextNode(videoTitle.value));
-  li.appendChild(title_span);
-
-  // Icons Span
-  const videoIcons = document.createElement('span');
-  videoIcons.className = 'video-icons';
-
-  // const playVideo = document.createElement('a');
-  // playVideo.className = 'play-video';
-  // playVideo.innerHTML = '<i class="far fa-play-circle"></i>';
-
-  const deleteVideo = document.createElement('a');
-  deleteVideo.className = 'delete-video';
-  deleteVideo.innerHTML = '<i class="fas fa-trash-alt"></i>';
-
-  // videoIcons.appendChild(playVideo);
-  videoIcons.appendChild(deleteVideo);
-
-  // Append Icons to li
-  li.appendChild(videoIcons);
-
-  // Append li to ul
-  videoList.appendChild(li);
-
-  // Store in Local Storage
-  storeVideoInLocalStorage(id, videoTitle.value, videoLink.value);
-
-  // Clear input
-  videoTitle.value = '';
-  videoLink.value = '';
-  document.querySelector('.bg-modal').style.display = "none";
 
   e.preventDefault();
 }
@@ -181,7 +179,7 @@ function deleteVideoFromLocalStorage(videoItem) {
 
   localStorage.setItem('playlist', JSON.stringify(playlist));
   // check if deleting current video
-  if (videoItem.id === JSON.parse(localStorage.getItem('lastPlayedVideo')).ID){
+  if (videoItem.id === JSON.parse(localStorage.getItem('lastPlayedVideo')).ID) {
     localStorage.removeItem('lastPlayedVideo');
     // getLastPLayedVideo();
   }
@@ -307,12 +305,26 @@ function getLastPLayedVideo() {
 }
 function playNextVideo() {
   let playlist = getPlaylist();
-  if(playlist != []) {
+  if (playlist != []) {
     document.querySelector('.video').setAttribute("src", generateURL(playlist[0].link, playlist[0].platform));
     localStorage.setItem('lastPlayedVideo', playlist[0]);
   } else {
     document.querySelector('.video').setAttribute("src", "https://www.youtube.com/embed/74cVT_tUpck?autoplay=1");
   }
+}
+
+function validateVideoURL(url) {
+  let regExpYoutube = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+  let regExpFB = /^(?:https?:\/\/)?(?:www.|web.|m.)?(facebook|fb).(com|watch)\/(?:video.php\?v=\d+|(\S+)|photo.php\?v=\d+|\?v=\d+)|\S+\/videos\/((\S+)\/(\d+)|(\d+))\/?$/;
+  let regExpVimeo = /^(?:https:\/\/)?(?:www\.)?(?:vimeo.com\/)(\d{5,9})(?=\/)?$/;
+
+  if (url.match(regExpYoutube)) return `https://www.youtube.com/embed/'${url.match(regExpYoutube)[1]}'?autoplay=1`;
+
+  else if (url.match(regExpFB)) return url;
+
+  else if (url.match(regExpVimeo)) return `https://player.vimeo.com/video/${url.match(regExpVimeo)[1]}`;
+
+  else return false;
 }
 
 // For Add Video Modal

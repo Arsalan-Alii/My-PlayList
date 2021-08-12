@@ -39,7 +39,7 @@
             <h2 id="task-title">Playlist</h2>
             <i class="fas fa-plus" id="add-video"></i>
           </div>
-          
+
           <div class="input-field">
             <!-- Search video <br> -->
             <input type="text" name="filter" id="filter" placeholder="Search Video">
@@ -47,21 +47,21 @@
           <div class="collection-list">
             <ul class="collection"></ul>
           </div>
-          
-          <a href="#" class="clear-playlist">Clear Playlist</a>
+
+          <span class="clear-playlist">Clear Playlist</span>
         </div>
       </div>
     </div>
 
-    
+
     <div class="add-video bg-modal">
       <div class="modal-contents">
         <div class="close">✖</div>
         <h3>Add Video to Playlist</h3>
         <h5>( YouTube - Facebook - Vimeo )</h5>
         <form id="add-video-form">
-          <input type="text" name="video-title" id="video-title" placeholder="Video Title">
-          <input type="text" name="video-link" id="video-link" placeholder="Video Link">
+          <input type="text" name="video-title" id="video-title" placeholder="Video Title" required>
+          <input type="text" name="video-link" id="video-link" placeholder="Video Link" required>
           <input type="submit" value="Add To Playlist" class="btn">
         </form>
       </div>
