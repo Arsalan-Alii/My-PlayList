@@ -112,6 +112,17 @@ function addVideo(e) {
     // Store in Local Storage
     storeVideoInLocalStorage(id, videoTitle.value, videoLink.value, urlValidation);
 
+    document.querySelector('.empty-playlist').style.display = 'none';
+    document.querySelector('.video-container').style.display = 'block';
+
+    if (document.querySelector(getPlaylist().length === 1)) {
+      let playlist = getPlaylist();
+      let videoLink = generateURL(playlist[0].platformId, playlist[0].platform);
+      document.querySelector('.video').setAttribute("src", videoLink);
+      localStorage.setItem("lastPlayedVideo", JSON.stringify(playlist[0]));
+      localStorage.setItem("currentPlayingVideo", JSON.stringify(playlist[0]));
+    }
+
     // Clear input
     videoTitle.value = '';
     videoLink.value = '';
@@ -136,6 +147,8 @@ function playVideo(e) {
     let playlist = getPlaylist();
 
     playlist.forEach(function (video) {
+      // document.querySelector('.video-container').style.display = 'block';
+      // document.querySelector('.empty-playlist').style.display = 'none';
       if (e.target.parentElement.id === video.ID) {
         let videoLink = generateURL(video.platformId, video.platform);
         document.querySelector('.video').setAttribute("src", videoLink);
@@ -182,6 +195,10 @@ function clearPlaylist() {
   }
   // Clear Local Storage
   localStorage.clear();
+
+  document.querySelector('.video-container').style.display = 'none';
+  document.querySelector('.empty-playlist').style.display = 'flex';
+  document.querySelector('.video').setAttribute("src", "");
 }
 
 function filterVideos(e) {
@@ -243,22 +260,32 @@ function getLastSelectedTheme() {
 }
 
 function getLastPLayedVideo() {
+  let playlist = getPlaylist();
+
   if (localStorage.getItem('lastPlayedVideo') != null) {
     const lastPlayed = JSON.parse(localStorage.getItem('lastPlayedVideo'));
     document.querySelector('.video').setAttribute("src", generateURL(lastPlayed.platformId, lastPlayed.platform));
   }
+  else if (playlist.length > 0) {
+    document.querySelector('.video').setAttribute("src", generateURL(playlist[0].platformId, playlist[0].platform));
+    localStorage.setItem('lastPlayedVideo', playlist[0]);
+  }
   else {
-    document.querySelector('.video').setAttribute("src", "https://www.youtube.com/embed/74cVT_tUpck");
+    document.querySelector('.video-container').style.display = 'none';
+    document.querySelector('.empty-playlist').style.display = 'flex';
   }
 }
 
 function playNextVideo() {
   let playlist = getPlaylist();
-  if (playlist != []) {
+  if (playlist.length > 0) {
     document.querySelector('.video').setAttribute("src", generateURL(playlist[0].platformId, playlist[0].platform));
     localStorage.setItem('lastPlayedVideo', playlist[0]);
-  } else {
-    document.querySelector('.video').setAttribute("src", "https://www.youtube.com/embed/74cVT_tUpck?autoplay=1");
+  } else if (playlist == [] || playlist.length < 1 || videoList.childElementCount < 1) {
+    document.querySelector('.video-container').style.display = 'none';
+    document.querySelector('.empty-playlist').style.display = 'flex';
+    localStorage.removeItem('lastPlayedVideo');
+    document.querySelector('.video').setAttribute("src", "");
   }
 }
 
