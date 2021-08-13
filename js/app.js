@@ -268,7 +268,7 @@ function getLastPLayedVideo() {
   }
   else if (playlist.length > 0) {
     document.querySelector('.video').setAttribute("src", generateURL(playlist[0].platformId, playlist[0].platform));
-    localStorage.setItem('lastPlayedVideo', playlist[0]);
+    localStorage.setItem('lastPlayedVideo', JSON.stringify(playlist[0]));
   }
   else {
     document.querySelector('.video-container').style.display = 'none';
@@ -280,8 +280,8 @@ function playNextVideo() {
   let playlist = getPlaylist();
   if (playlist.length > 0) {
     document.querySelector('.video').setAttribute("src", generateURL(playlist[0].platformId, playlist[0].platform));
-    localStorage.setItem('lastPlayedVideo', playlist[0]);
-  } else if (playlist == [] || playlist.length < 1 || videoList.childElementCount < 1) {
+    localStorage.setItem('lastPlayedVideo', JSON.stringify(playlist[0]));
+  } else if (playlist == [] || playlist.length < 1) {
     document.querySelector('.video-container').style.display = 'none';
     document.querySelector('.empty-playlist').style.display = 'flex';
     localStorage.removeItem('lastPlayedVideo');
